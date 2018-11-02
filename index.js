@@ -4,41 +4,43 @@ const seg = require("nodejieba");
 const qq = new QQ();
 
 let quote;
-let lastSentense;
+let lastSentence;
 
 qq.on('msg', ({groupId, content}) => {
-    if (!lastSentense) {
+    if (!lastSentence) {
         if (content !== '') {
-            lastSentense = content;
+            lastSentence = content;
         }
     } else {
-        if (lastSentense === content && quote !== content) {
+        if (lastSentence === content && quote !== content) {
             quote = content;
-            setTimeout(500, () => {
+            setTimeout(() => {
                 qq.sendGroupMsg(groupId, quote);
-            })
+            }, 500)
         } else {
-            if (lastSentense.substr(1) === content && content.length > 1) {
+            if (lastSentence.substr(1) === content && content.length > 1) {
                 qq.sendGroupMsg(groupId, content.substr(1));
             } else {
                 if (content.length > 12) {
                     let res = seg.extract(content, 3);
                     if (res[0] && Math.random() < 0.1) {
                         console.log(res[0].word);
-                        setTimeout(500, () => {
+                        setTimeout(() => {
                             qq.sendGroupMsg(groupId, `${res[0].word}${Math.random() < 0.5 ? "!" : "?"}`);
-                        })
+                        }, 500)
                     }
                 }
             }
         }
 
-        lastSentense = content;
+        lastSentence = content;
     }
 });
 
 qq.on('buddy', (msg) => {
-    qq.sendBuddyMsg(msg.id, `Hi Buddy`);
+    setTimeout(() => {
+        qq.sendBuddyMsg(msg.id, `？`);
+    }, 500)
 });
 
 qq.run();
